@@ -11,6 +11,12 @@ pipeline {
     }
 
     stages {
+        stage('Env Check') {
+            steps {
+                echo JAVA_HOME
+            }
+        }
+
         stage('Checkout') {
             steps {
                 parallel(one: {
