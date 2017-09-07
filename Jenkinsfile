@@ -14,6 +14,7 @@ pipeline {
         stage('Env Check') {
             steps {
                 echo JAVA_HOME
+                sh 'env'
             }
         }
 
