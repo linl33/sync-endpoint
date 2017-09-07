@@ -1,3 +1,6 @@
+final String syncEndpointDir = 'sync-endpoint'
+final String syncEndpointContainerDir = 'sync-endpoint-container'
+
 pipeline {
     agent {
         label 'docker'
@@ -11,23 +14,39 @@ pipeline {
         stage('Checkout') {
             steps {
                 parallel(one: {
-                    dir('sync-endpoint') {
+                    dir(syncEndpointDir) {
                         checkout scm
                     }
                 }, two: {
-                    dir('sync-endpoint-container') {
+                    dir(syncEndpointContainerDir) {
                         script {
-                            checkoutGitRepo('https://github.com/linl33/sync-endpoint-containers.git')
+                            checkoutGitRepo('https://github.com/linl33/sync-endpoint-containers.git', 'master')
                         }
                     }
                 })
             }
         }
+
+        stage('Install Ant Dependency') {
+            steps {
+                dir(syncEndpointDir + '/src/main/libs') {
+                    sh 'ant'
+                }
+            }
+        }
+
+        stage('Build Sync Endpoint') {
+            steps {
+                dir(syncEndpointDir) {
+                    sh 'mvn -pl "aggregate-src" package'
+                }
+            }
+        }
     }
 }
 
-Map checkoutGitRepo(String url) {
-    checkout scm: [$class: 'GitSCM', branches: [[name: '*/master']],
+Map checkoutGitRepo(String url, String branch) {
+    checkout scm: [$class: 'GitSCM', branches: [[name: '*/' + branch]],
                    doGenerateSubmoduleConfigurations: false,
                    extensions: [[$class: 'WipeWorkspace'], [$class: 'CloneOption', honorRefspec: true, noTags: true, reference: '', shallow: true]],
                    submoduleCfg: [], userRemoteConfigs: [[url: url]]]
