@@ -57,7 +57,7 @@ pipeline {
                     sh 'sed -i "s/odk-mysql-it-settings/odk-container-settings/" aggregate-mysql/pom.xml'
                     sh 'mvn -pl "aggregate-src, odk-container-settings, aggregate-mysql" package'
 
-                    sh 'mv aggregate-mysql/target ../' + syncEndpointContainerDir '/target'
+                    sh "mv aggregate-mysql/target ../$syncEndpointContainerDir/target"
                 }
             }
         }
