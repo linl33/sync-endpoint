@@ -9,6 +9,7 @@ pipeline {
     options {
         skipDefaultCheckout()
         skipStagesAfterUnstable()
+        buildDiscarder(logRotator(numToKeepStr:'5'))
     }
 
     tools {
