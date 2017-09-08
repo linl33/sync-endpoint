@@ -10,6 +10,10 @@ pipeline {
         skipDefaultCheckout()
     }
 
+    tools {
+        jdk 'JDK 1.8'
+    }
+
     stages {
         stage('Env Check') {
             steps {
@@ -17,6 +21,12 @@ pipeline {
                 sh 'env'
             }
         }
+
+//        stage('Unset Env') {
+//            steps {
+//                sh 'unset JAVA_HOME'
+//            }
+//        }
 
         stage('Checkout') {
             steps {
