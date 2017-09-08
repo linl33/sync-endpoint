@@ -12,7 +12,6 @@ pipeline {
 
     tools {
         jdk 'JDK 1.8'
-        tool 'invalid'
     }
 
     stages {
@@ -22,12 +21,6 @@ pipeline {
                 sh 'env'
             }
         }
-
-//        stage('Unset Env') {
-//            steps {
-//                sh 'unset JAVA_HOME'
-//            }
-//        }
 
         stage('Checkout') {
             steps {
