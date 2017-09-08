@@ -57,7 +57,7 @@ pipeline {
                     sh 'sed -i "s/odk-mysql-it-settings/odk-container-settings/" aggregate-mysql/pom.xml'
                     sh 'mvn -pl "aggregate-src, odk-container-settings, aggregate-mysql" package'
 
-                    sh "mv aggregate-mysql/target ../$syncEndpointContainerDir/target"
+                    sh "mv aggregate-mysql/target ../${syncEndpointContainerDir}/target"
                 }
             }
         }
@@ -66,7 +66,7 @@ pipeline {
             steps {
                 dir(syncEndpointContainerDir) {
                     script {
-                        docker.build('odk/sync_endpoint', '--no-cache --pull -f Dockerfile.dev .')
+                        docker.build("odk/sync_endpoint:${env.BUILD_NUMBER}", '--no-cache --pull -f Dockerfile.dev .')
                     }
                 }
             }
