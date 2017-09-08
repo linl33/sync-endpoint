@@ -78,6 +78,14 @@ pipeline {
             }
         }
     }
+
+    post {
+        success {
+            script {
+                docker.image("odk/sync_endpoint:${env.BUILD_NUMBER}").tag('latest')
+            }
+        }
+    }
 }
 
 Map checkoutGitRepo(String url, String branch) {
