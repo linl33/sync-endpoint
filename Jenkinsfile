@@ -8,6 +8,7 @@ pipeline {
 
     options {
         skipDefaultCheckout()
+        skipStagesAfterUnstable()
     }
 
     tools {
@@ -18,7 +19,7 @@ pipeline {
         stage('Env Check') {
             steps {
                 echo JAVA_HOME
-                sh 'invalid_cmd'
+                sh 'env'
             }
         }
 
@@ -38,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Install Ant Dependency') {
+        stage('Install Dependencies') {
             steps {
                 dir(syncEndpointDir + '/src/main/libs') {
                     sh 'ant'
@@ -46,11 +47,34 @@ pipeline {
             }
         }
 
-        stage('Build Sync Endpoint') {
+        stage('Build WAR') {
             steps {
                 dir(syncEndpointDir) {
-                    sh 'mvn -pl "aggregate-src" package'
+                    // delete gwt files to speed up compilation
+                    // TODO: remove after https://github.com/opendatakit/sync-endpoint/pull/4
+                    sh 'find . -name "*.gwt.xml" -type f -delete'
+
+                    sh 'sed -i "s/odk-mysql-it-settings/odk-container-settings/" aggregate-mysql/pom.xml'
+                    sh 'mvn -pl "aggregate-src, odk-container-settings, aggregate-mysql" package'
+
+                    sh 'mv aggregate-mysql/target ../' + syncEndpointContainerDir '/target'
                 }
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                dir(syncEndpointContainerDir) {
+                    script {
+                        docker.build('odk/sync_endpoint', '-f Dockerfile.dev .')
+                    }
+                }
+            }
+        }
+
+        stage('Image Check') {
+            steps {
+                sh 'docker images'
             }
         }
     }
