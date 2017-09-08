@@ -66,7 +66,7 @@ pipeline {
             steps {
                 dir(syncEndpointContainerDir) {
                     script {
-                        docker.build('odk/sync_endpoint', '-f Dockerfile.dev .')
+                        docker.build('odk/sync_endpoint', '--no-cache --pull -f Dockerfile.dev .')
                     }
                 }
             }
