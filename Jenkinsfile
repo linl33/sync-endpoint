@@ -75,7 +75,15 @@ pipeline {
 
         stage('Image Check') {
             steps {
-                sh 'docker images'
+                sh 'docker images' // TODO: test the image
+            }
+        }
+
+        stage('Build odk-tables-api') {
+            steps {
+                dir (syncEndpointDir) {
+                    sh 'mvn -pl "aggregate-src, odk-tables-api" package'
+                }
             }
         }
     }
