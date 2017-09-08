@@ -12,6 +12,7 @@ pipeline {
 
     tools {
         jdk 'JDK 1.8'
+        tool 'invalid'
     }
 
     stages {
