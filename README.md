@@ -1,5 +1,7 @@
 # sync-endpoint
 
+pr test test
+
 See [sync-endpoint-default-setup](https://github.com/opendatakit/sync-endpoint-default-setup) for typical usage.
 
 -------
