@@ -105,16 +105,19 @@ public final class DatastoreAccessMetrics {
   public DatastoreAccessMetrics() {
   }
 
-  public synchronized void logUsage() {
+  private synchronized void logUsage() {
     long now = System.currentTimeMillis();
     lastLogging = now;
     String gmtDate = WebUtils.iso8601Date(new java.util.Date(now));
     logger.info("---------- " + gmtDate + " @ " + readCount + " ------------");
     for (Map.Entry<String, Short> entry : tableMap.entrySet()) {
       Short idx = entry.getValue();
-      logger.info(entry.getKey() + "," + countQueryArray.getUsage(idx) + ","
-          + countQueryResultArray.getUsage(idx) + "," + countGetArray.getUsage(idx) + ","
-          + countPutArray.getUsage(idx) + "," + countDeleteArray.getUsage(idx));
+      logger.info(entry.getKey()
+          + "," + countQueryArray.getUsage(idx)
+          + "," + countQueryResultArray.getUsage(idx)
+          + "," + countGetArray.getUsage(idx)
+          + "," + countPutArray.getUsage(idx)
+          + "," + countDeleteArray.getUsage(idx));
     }
     logger.info("-----------------------------------------");
     countQueryArray.clear();
@@ -134,6 +137,7 @@ public final class DatastoreAccessMetrics {
     readCount = readCount + incCount;
     if ((readCount / 500) != (oldReadCount / 500)
         || (lastLogging + ACCESS_METRIC_DUMP_INTERVAL < now)) {
+      logUsage();
     }
   }
 
