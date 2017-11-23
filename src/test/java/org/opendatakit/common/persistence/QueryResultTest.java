@@ -238,7 +238,7 @@ public class QueryResultTest {
 		
 		Query query = ds.createQuery(rel, "QueryResultTest.testCase1str", user);
 		
-		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldStr);
+		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldStr, true);
 		assertEquals(6, values.size());
 	}
 
@@ -252,7 +252,7 @@ public class QueryResultTest {
 		
 		Query query = ds.createQuery(rel, "QueryResultTest.testCase1dbl", user);
 		
-		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldDbl);
+		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldDbl, true);
 		assertEquals(SET_SIZE + 7, values.size());
 	}
 	
@@ -266,7 +266,7 @@ public class QueryResultTest {
 		
 		Query query = ds.createQuery(rel, "QueryResultTest.testCase1bool", user);
 		
-		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldBool);
+		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldBool, true);
 		// true, false, null
 		assertEquals(3, values.size());
 	}
@@ -281,7 +281,7 @@ public class QueryResultTest {
 		
 		Query query = ds.createQuery(rel, "QueryResultTest.testCase1int", user);
 		
-		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldInt);
+		List<?> values = query.executeDistinctValueForDataField(MyRelation.fieldInt, true);
 		assertEquals(SET_SIZE, values.size());
 	}
 	

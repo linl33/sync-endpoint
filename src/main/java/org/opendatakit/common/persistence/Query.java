@@ -116,9 +116,10 @@ public interface Query {
    * and sort criteria.
    * 
    * @param dataField
+   * @param sorted
    * @return
    * @throws ODKDatastoreException 
    * @throws ODKOverQuotaException if the usage quota was exceeded
    */
-  public List<?> executeDistinctValueForDataField(DataField dataField) throws ODKDatastoreException, ODKOverQuotaException;
+  public List<?> executeDistinctValueForDataField(DataField dataField, boolean sorted) throws ODKDatastoreException, ODKOverQuotaException;
 }

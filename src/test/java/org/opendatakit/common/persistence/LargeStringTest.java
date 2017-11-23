@@ -248,7 +248,7 @@ public class LargeStringTest {
 		
 		Query query = ds.createQuery(rel, "LargeStringTest.verifyRowCount", user);
 		
-		List<?> dbValues = query.executeDistinctValueForDataField(MyLargeStringRelation.fieldLargeString);
+		List<?> dbValues = query.executeDistinctValueForDataField(MyLargeStringRelation.fieldLargeString, true);
 		assertEquals(values.length, dbValues.size());
 	}
 	
@@ -379,7 +379,7 @@ public class LargeStringTest {
       
       Query query = ds.createQuery(rel, "LargeStringTest.verifyDynamicRowCount", user);
       
-      List<?> dbValues = query.executeDistinctValueForDataField(MyDynamicLargeStringRelation.fieldLargeString);
+      List<?> dbValues = query.executeDistinctValueForDataField(MyDynamicLargeStringRelation.fieldLargeString, true);
       assertEquals(values.length, dbValues.size());
    }
    

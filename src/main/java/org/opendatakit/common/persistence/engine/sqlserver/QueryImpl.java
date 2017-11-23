@@ -275,10 +275,12 @@ public class QueryImpl implements Query {
   }
 
   @Override
-  public List<?> executeDistinctValueForDataField(DataField dataField) throws ODKDatastoreException {
+  public List<?> executeDistinctValueForDataField(DataField dataField, boolean sorted) throws ODKDatastoreException {
 
-    String query = generateDistinctFieldValueQuery(dataField) + queryBindBuilder.toString()
-        + querySortBuilder.toString() + ";";
+    String query = generateDistinctFieldValueQuery(dataField)
+        + queryBindBuilder.toString()
+        + (sorted ? querySortBuilder.toString() : "")
+        + ";";
 
     List<?> keys = null;
     try {
@@ -297,7 +299,7 @@ public class QueryImpl implements Query {
   public Set<EntityKey> executeForeignKeyQuery(CommonFieldsBase topLevelTable,
       DataField topLevelAuri) throws ODKDatastoreException {
 
-    List<?> keys = executeDistinctValueForDataField(topLevelAuri);
+    List<?> keys = executeDistinctValueForDataField(topLevelAuri, true);
 
     Set<EntityKey> keySet = new HashSet<EntityKey>();
     for (Object o : keys) {

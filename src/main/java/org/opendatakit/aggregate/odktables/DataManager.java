@@ -16,40 +16,16 @@
 
 package org.opendatakit.aggregate.odktables;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.lang3.Validate;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.opendatakit.aggregate.odktables.exception.BadColumnNameException;
-import org.opendatakit.aggregate.odktables.exception.ETagMismatchException;
-import org.opendatakit.aggregate.odktables.exception.InconsistentStateException;
-import org.opendatakit.aggregate.odktables.exception.PermissionDeniedException;
-import org.opendatakit.aggregate.odktables.exception.TableDataETagMismatchException;
-import org.opendatakit.aggregate.odktables.relation.DbColumnDefinitions;
+import org.opendatakit.aggregate.odktables.exception.*;
+import org.opendatakit.aggregate.odktables.relation.*;
 import org.opendatakit.aggregate.odktables.relation.DbColumnDefinitions.DbColumnDefinitionsEntity;
-import org.opendatakit.aggregate.odktables.relation.DbLogTable;
-import org.opendatakit.aggregate.odktables.relation.DbTable;
-import org.opendatakit.aggregate.odktables.relation.DbTableDefinitions;
 import org.opendatakit.aggregate.odktables.relation.DbTableDefinitions.DbTableDefinitionsEntity;
-import org.opendatakit.aggregate.odktables.relation.DbTableEntry;
 import org.opendatakit.aggregate.odktables.relation.DbTableEntry.DbTableEntryEntity;
-import org.opendatakit.aggregate.odktables.relation.EntityConverter;
-import org.opendatakit.aggregate.odktables.relation.EntityCreator;
-import org.opendatakit.aggregate.odktables.rest.entity.ChangeSetList;
-import org.opendatakit.aggregate.odktables.rest.entity.Row;
-import org.opendatakit.aggregate.odktables.rest.entity.RowFilterScope;
-import org.opendatakit.aggregate.odktables.rest.entity.RowList;
-import org.opendatakit.aggregate.odktables.rest.entity.RowOutcome;
+import org.opendatakit.aggregate.odktables.rest.entity.*;
 import org.opendatakit.aggregate.odktables.rest.entity.RowOutcome.OutcomeType;
-import org.opendatakit.aggregate.odktables.rest.entity.RowOutcomeList;
-import org.opendatakit.aggregate.odktables.rest.entity.Scope;
 import org.opendatakit.aggregate.odktables.rest.entity.TableRole.TablePermission;
 import org.opendatakit.aggregate.odktables.security.TablesUserPermissions;
 import org.opendatakit.common.ermodel.Entity;
@@ -65,6 +41,10 @@ import org.opendatakit.common.persistence.exception.ODKEntityPersistException;
 import org.opendatakit.common.persistence.exception.ODKTaskLockException;
 import org.opendatakit.common.web.CallingContext;
 import org.opendatakit.common.web.constants.BasicConsts;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Manages read, insert, update, and delete operations on the rows of a table.
@@ -348,11 +328,9 @@ public class DataManager {
 
       Query query;
       if (sequenceValue == null) {
-        query = buildRowsFromBeginningQuery(logTable, entry, (startCursor == null ? true
-            : startCursor.isForwardCursor()));
+        query = buildRowsFromBeginningQuery(logTable, entry, (startCursor == null || startCursor.isForwardCursor()));
       } else {
-        query = buildRowsSinceQuery(logTable, sequenceValue, (startCursor == null ? true
-            : startCursor.isForwardCursor()));
+        query = buildRowsSinceQuery(logTable, sequenceValue, (startCursor == null || startCursor.isForwardCursor()));
       }
 
       result = query.execute(startCursor, fetchLimit);
@@ -474,8 +452,7 @@ public class DataManager {
       if (startSequenceValue == null) {
         throw new IllegalArgumentException("No sequence value exists for the specified startTime.");
       } else {
-        query = buildRowsIncludingQuery(logTable, startSequenceValue, endSequenceValue, (startCursor == null ? true
-            : startCursor.isForwardCursor()));
+        query = buildRowsIncludingQuery(logTable, startSequenceValue, endSequenceValue, (startCursor == null || startCursor.isForwardCursor()));
       }
 
       result = query.execute(startCursor, fetchLimit);
@@ -1554,11 +1531,11 @@ public class DataManager {
 
     userPermissions.checkPermission(appId, tableId, TablePermission.READ_ROW);
 
-    String currentDataETag = null;
-    String retrievalSequenceValue = null;
+    String currentDataETag;
+    String retrievalSequenceValue;
     
-    List<DbColumnDefinitionsEntity> columns = null;
-    List<?> result = null;
+    List<DbColumnDefinitionsEntity> columns;
+    List<?> result;
     OdkTablesLockTemplate propsLock = new OdkTablesLockTemplate(tableId,
         ODKTablesTaskLockType.TABLES_NON_PERMISSIONS_CHANGES, OdkTablesLockTemplate.DelayStrategy.SHORT, cc);
     try {
@@ -1605,13 +1582,13 @@ public class DataManager {
       } else {
         query = buildRowsSinceQuery(logTable, unifiedSequenceValue, true);
       }
-      
-      result = query.getDistinct(DbLogTable.DATA_ETAG_AT_MODIFICATION);
+
+      result = query.getDistinct(DbLogTable.DATA_ETAG_AT_MODIFICATION, false);
     } finally {
       propsLock.release();
     }
 
-    if (result == null || result.isEmpty() ) {
+    if (result == null || result.isEmpty()) {
       return new ChangeSetList(null, currentDataETag, retrievalSequenceValue);
     }
 
@@ -1620,7 +1597,7 @@ public class DataManager {
       String value = (String) o;
       dataETags.add(value);
     }
-    
+
     return new ChangeSetList(dataETags, currentDataETag, retrievalSequenceValue);
   }
 
@@ -1673,8 +1650,7 @@ public class DataManager {
 
       revertPendingChanges(entry, columns, table, logTable);
 
-      boolean isForwardCursor = (startCursor == null ? true
-          : startCursor.isForwardCursor());
+      boolean isForwardCursor = (startCursor == null || startCursor.isForwardCursor());
       
       if ( isActive ) {
         // query is against DbTable

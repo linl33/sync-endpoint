@@ -137,8 +137,7 @@ public class DiffServiceImpl implements DiffService {
       String fetchLimit) throws ODKDatastoreException, PermissionDeniedException,
       InconsistentStateException, ODKTaskLockException, BadColumnNameException {
 
-    boolean bIsActive = (isActive == null || isActive.length() == 0 || !isActive.equalsIgnoreCase("true")) 
-        ? false : true;
+    boolean bIsActive = isActive != null && isActive.equalsIgnoreCase("true");
     int limit = (fetchLimit == null || fetchLimit.length() == 0) ? 2000 : Integer.valueOf(fetchLimit);
     WebsafeRows websafeResult = dm.getChangeSetRows(dataETag, bIsActive, QueryResumePoint.fromWebsafeCursor(WebUtils.safeDecode(cursor)), limit);
     RowResourceList rowResourceList = new RowResourceList(getResources(websafeResult.rows),

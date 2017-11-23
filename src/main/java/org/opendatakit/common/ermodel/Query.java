@@ -503,13 +503,15 @@ public class Query {
    *
    * @param field
    *          the name of the field to retrieve distinct values for.
+   * @param sorted
+   *          true to apply sorting
    * @return a list of distinct values for the given field, narrowed by any
    *         existing filter and sort criteria.
    */
-  public List<?> getDistinct(DataField field) {
+  public List<?> getDistinct(DataField field, boolean sorted) {
     Validate.notNull(field);
     try {
-      return query.executeDistinctValueForDataField(relation.verify(field));
+      return query.executeDistinctValueForDataField(relation.verify(field), sorted);
     } catch (ODKDatastoreException e) {
       return Collections.emptyList();
     }
@@ -521,14 +523,16 @@ public class Query {
    *
    * @param fieldName
    *          the name of the field to retrieve distinct values for.
+   * @param sorted
+   *          true to apply sorting
    * @return a list of distinct values for the given field, narrowed by any
    *         existing filter and sort criteria.
    */
-  public List<?> getDistinct(String fieldName) {
+  public List<?> getDistinct(String fieldName, boolean sorted) {
     Validate.notEmpty(fieldName);
     DataField dataField = relation.getDataField(fieldName);
     try {
-      return query.executeDistinctValueForDataField(dataField);
+      return query.executeDistinctValueForDataField(dataField, sorted);
     } catch (ODKDatastoreException e) {
       return Collections.emptyList();
     }

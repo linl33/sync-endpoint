@@ -286,7 +286,7 @@ public class Relation {
 
     org.opendatakit.common.persistence.Query q = ds.createQuery(prototype,
         "AbstractRelation.dropRelation", user);
-    List<?> pkList = q.executeDistinctValueForDataField(prototype.primaryKey);
+    List<?> pkList = q.executeDistinctValueForDataField(prototype.primaryKey, true);
     List<EntityKey> keys = new ArrayList<EntityKey>();
     for (Object key : pkList) {
       // we don't ahve the individual records, just the PKs for them
