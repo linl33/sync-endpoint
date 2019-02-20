@@ -92,6 +92,9 @@
                                 <ports>
                                     <port>3306:3306</port>
                                 </ports>
+                                <tmpfs>
+                                    <mount>/var/lib/mysql</mount>
+                                </tmpfs>
 
                                 <wait>
                                     <time>20000</time>

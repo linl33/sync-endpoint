@@ -86,6 +86,9 @@
                                 <ports>
                                     <port>5432:5432</port>
                                 </ports>
+                                <tmpfs>
+                                    <mount>/var/lib/postgresql/data</mount>
+                                </tmpfs>
 
                                 <wait>
                                     <time>10000</time>
